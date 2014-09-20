@@ -5,4 +5,4 @@ This script will save file in blob cache, and this file can be download, or if i
 
 
 
-[Examples](http://jsu.zz.mu/jsblobdownloader.php)
+[Examples](http://jwbr.tk/JsBlobDownloader)
