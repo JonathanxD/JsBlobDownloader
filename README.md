@@ -5,4 +5,4 @@ This script will save file in blob cache, and this file can be download, or if i
 
 
 
-[Examples](http://jwbr.tk/jsnlobdownloader)
+[Examples](http://jwbr.tk/jsblobdownloader)
