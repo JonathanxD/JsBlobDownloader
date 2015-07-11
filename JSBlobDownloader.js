@@ -9,7 +9,7 @@
 	downloaded completely file and the velocity of this download, 
 	of course you have to know to do it to measure velocity.
 	
-    Copyright (C) 2014   JonathanScripter
+    Copyright (C) 2015   JonathanScripter
 
  	Licensed under the MIT license:
 	http://www.opensource.org/licenses/mit-license.php
