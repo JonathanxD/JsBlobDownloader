@@ -57,6 +57,21 @@ function download(file, onFinish, updateProgressBar, mimeType) {
 	downloadChunked(file, 1, onFinish, updateProgressBar, mimeType);
 }
 
+function downloadChunkedBySize(file, size, onFinish, updateProgressBar, mimeType) {
+	new Promise(resolve => {
+	  var xhr = new XMLHttpRequest();
+	  xhr.open('GET', file, true);
+	  xhr.onreadystatechange = () => {
+	      resolve(+xhr.getResponseHeader("Content-Length"));
+	      xhr.abort();
+	  };
+	  xhr.send();
+	}).then(file_size => {            
+            downloadChunkedSized(file, parseInt(file_size / size, 10), file_size, onFinish, updateProgressBar, mimeType);
+        });
+}
+
+
 function downloadChunked(file, chunks, onFinish, updateProgressBar, mimeType) {
 	mimeType = (typeof mimeType !== 'undefined' ? mimeType : 'application/octet-stream');
 	new Promise(resolve => {
@@ -68,75 +83,79 @@ function downloadChunked(file, chunks, onFinish, updateProgressBar, mimeType) {
 	  };
 	  xhr.send();
 	}).then(file_size => {
-		var blob = null;
-		var size = 0;
-		var downloaded = 0;
-		var currentChunk = 1;
-
-		var size_per_chunk = parseInt(file_size / chunks, 10);
-
-		function retryDownload() {
-			setTimeout(tryDownload, 2000);
-		}
-
-		var updater = function(evt) {
-			var prog = function() {};
-			prog.lengthComputable = evt.lengthComputable;
-			prog.loaded = evt.loaded + size;
-			prog.total = file_size;
-			updateProgressBar(prog);
-		}
-
-		function tryDownload() {
-			try {
-				var req = new XMLHttpRequest();
-				req.timeout = 10000;
-				req.onprogress = updater;
-				req.open('GET', file, true);
-				var range = "";
-
-				if (currentChunk == chunks) {
-					range = size + "-";
-				} else {
-					range = size + "-" + (size_per_chunk * currentChunk);
-				}
-				req.setRequestHeader("Range", "bytes="+range);
-				req.overrideMimeType(mimeType);
-
-				req.responseType = 'arraybuffer';
-				req.onload = function(e) {
-					if (this.readyState == 4 && req.response) {
-						try {
-							if (blob) {
-								blobb = new NewBlob([this.response], mimeType);
-								size += blobb.size;
-								blob = new NewBlob([blob, blobb], mimeType);
-							} else {
-								blob = new NewBlob([this.response], mimeType);
-								size += blob.size;
-							}
-
-							if (currentChunk == chunks) {
-								onFinish(window.URL.createObjectURL(blob));
-							} else {
-								currentChunk++;
-								tryDownload();
-							}
-						} catch (e) {
-							retryDownload();
-						}
-					}
-				};
-				req.onreadystatechange = function() {
-					if (req.readyState == 4 && !req.response) {
-						retryDownload();
-					}
-				};
-				req.send();
-			} catch(e) {
-				retryDownload();
-			}
-		}
-		tryDownload();
+            downloadChunkedSized(file, chunks, file_size, onFinish, updateProgressBar, mimeType);
 	});
+}
+
+function downloadChunkedSized(file, chunks, fileSize, onFinish, updateProgressBar, mimeType) {
+    var blob = null;
+    var size = 0;
+    var downloaded = 0;
+    var currentChunk = 1;
+
+    var size_per_chunk = parseInt(fileSize / chunks, 10);
+
+    function retryDownload() {
+            setTimeout(tryDownload, 2000);
+    }
+
+    var updater = function(evt) {
+            var prog = function() {};
+            prog.lengthComputable = evt.lengthComputable;
+            prog.loaded = evt.loaded + size;
+            prog.total = fileSize;
+            updateProgressBar(prog);
+    }
+
+    function tryDownload() {
+            try {
+                    var req = new XMLHttpRequest();
+                    req.timeout = 10000;
+                    req.onprogress = updater;
+                    req.open('GET', file, true);
+                    var range = "";
+
+                    if (currentChunk == chunks) {
+                            range = size + "-";
+                    } else {
+                            range = size + "-" + (size_per_chunk * currentChunk);
+                    }
+                    req.setRequestHeader("Range", "bytes="+range);
+                    req.overrideMimeType(mimeType);
+
+                    req.responseType = 'arraybuffer';
+                    req.onload = function(e) {
+                            if (this.readyState == 4 && req.response) {
+                                    try {
+                                            if (blob) {
+                                                    blobb = new NewBlob([this.response], mimeType);
+                                                    size += blobb.size;
+                                                    blob = new NewBlob([blob, blobb], mimeType);
+                                            } else {
+                                                    blob = new NewBlob([this.response], mimeType);
+                                                    size += blob.size;
+                                            }
+
+                                            if (currentChunk == chunks) {
+                                                    onFinish(window.URL.createObjectURL(blob));
+                                            } else {
+                                                    currentChunk++;
+                                                    tryDownload();
+                                            }
+                                    } catch (e) {
+                                            retryDownload();
+                                    }
+                            }
+                    };
+                    req.onreadystatechange = function() {
+                            if (req.readyState == 4 && !req.response) {
+                                    retryDownload();
+                            }
+                    };
+                    req.send();
+            } catch(e) {
+                    retryDownload();
+            }
+    }
+    tryDownload();
 }
