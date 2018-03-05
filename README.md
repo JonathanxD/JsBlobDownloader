@@ -11,7 +11,7 @@ This script will save file in blob cache, and this file can be download, or if i
 Chunked
 ================
 
-Since 05/03/2018 (DD/MM/YYYY), JSBlobDownloader supports chunked download (requested by @usherfiles, issue #1), resume is not possible because JSBlobDownloader uses XHR (XMLHttpRequest) which does not allow to retrieve data if download is interrupted (I've considered using Streams API, but it requires to be explicit enabled in Firefox, so, it is not the better choice). However, if the download of chunk 7 is interrupted by the server, the script will retry to download this particular chunk, so the entire data does not need to be downloaded again.
+Since 05/03/2018 (DD/MM/YYYY), JSBlobDownloader supports chunked download (requested by [@usherfiles](https://github.com/usherfiles), issue [#1](https://github.com/JonathanxD/JsBlobDownloader/issues/1)), resume is not possible because JSBlobDownloader uses XHR (XMLHttpRequest) which does not allow to retrieve data if download was interrupted (I've considered using Streams API, but it requires to be explicit enabled in Firefox, so, it is not the better choice). However, if the download of chunk 7 is interrupted by the server, the script will retry to download this particular chunk, so the entire data does not need to be downloaded again.
 
 How to use:
 
