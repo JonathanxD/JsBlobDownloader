@@ -24,7 +24,7 @@ The example 1 and example 4 in the [website](http://jsu.zz.mu/jsblobdownloader) 
 You may also prefer to chunk by size (the file size will be fetched from remote server and divided by the provided size):
 
 ```
-downloadChunkedBySize(file, size, chunks, onFinish, updateProgressBar);
+downloadChunkedBySize(file, size, onFinish, updateProgressBar);
 ```
 
 The size parameter is size in bytes, `20MB` for example is: `20*1024*1024`, 1MB is `1*1024*1024`.
